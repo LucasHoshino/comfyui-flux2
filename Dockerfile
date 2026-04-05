@@ -1,5 +1,7 @@
 FROM runpod/worker-comfyui:5.5.1-base
 
+RUN cd /comfyui && git pull && pip install -r requirements.txt 2>/dev/null || true
+
 RUN cd /comfyui/custom_nodes && \
     git clone https://github.com/cubiq/ComfyUI_essentials comfyui_essentials && \
     git clone https://github.com/yolain/ComfyUI-Easy-Use comfyui-easy-use && \

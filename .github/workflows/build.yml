@@ -25,4 +25,4 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: lucashoshino/comfyui-flux2:v5
+          tags: lucashoshino/comfyui-flux2:v6
