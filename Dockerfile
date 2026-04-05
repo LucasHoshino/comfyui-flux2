@@ -1,18 +1,23 @@
 FROM runpod/worker-comfyui:5.5.1-base
 
-RUN cd /comfyui && \
-    git fetch origin && \
-    git checkout main && \
-    git pull origin main && \
-    pip install -r requirements.txt 2>/dev/null || true
+RUN rm -rf /comfyui && \
+    git clone --depth 1 https://github.com/comfyanonymous/ComfyUI /comfyui && \
+    cd /comfyui && pip install --no-cache-dir -r requirements.txt
 
 RUN cd /comfyui/custom_nodes && \
-    git clone https://github.com/cubiq/ComfyUI_essentials comfyui_essentials && \
-    git clone https://github.com/yolain/ComfyUI-Easy-Use comfyui-easy-use && \
-    git clone https://github.com/rgthree/rgthree-comfy && \
-    git clone https://github.com/chrisgoringe/cg-use-everywhere && \
-    git clone https://github.com/kijai/ComfyUI-KJNodes && \
-    pip install -r /comfyui/custom_nodes/comfyui-easy-use/requirements.txt && \
-    pip install -r /comfyui/custom_nodes/comfyui_essentials/requirements.txt
+    git clone --depth 1 https://github.com/cubiq/ComfyUI_essentials && \
+    git clone --depth 1 https://github.com/yolain/ComfyUI-Easy-Use && \
+    git clone --depth 1 https://github.com/kijai/ComfyUI-KJNodes && \
+    for dir in /comfyui/custom_nodes/*/; do \
+      [ -f "$dir/requirements.txt" ] && pip install --no-cache-dir -r "$dir/requirements.txt" || true; \
+    done
 
-COPY extra_model_paths.yaml /comfyui/extra_model_paths.yaml
+RUN printf 'runpod_volume:\n\
+    base_path: /runpod-volume/models\n\
+    diffusion_models: diffusion_models/\n\
+    clip: text_encoders/\n\
+    vae: vae/\n' > /comfyui/extra_model_paths.yaml
+
+RUN grep -r "EmptyFlux2LatentImage" /comfyui/comfy_extras/ && \
+    grep -r "ReferenceLatent" /comfyui/comfy_extras/ && \
+    echo "All required Flux2 nodes found"
