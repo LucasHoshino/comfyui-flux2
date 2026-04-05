@@ -8,3 +8,5 @@ RUN cd /comfyui/custom_nodes && \
     git clone https://github.com/kijai/ComfyUI-KJNodes && \
     cd comfyui-easy-use && pip install -r requirements.txt 2>/dev/null || true && \
     cd ../comfyui_essentials && pip install -r requirements.txt 2>/dev/null || true
+
+COPY extra_model_paths.yaml /comfyui/extra_model_paths.yaml
